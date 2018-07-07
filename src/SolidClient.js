@@ -119,9 +119,11 @@ class SolidClient {
    * @returns Promise<string> An access URL.
    */
   async performLogin(loginUrl, loginParams, credentials) {
+    // Set the credentials
     loginParams.username = credentials.username;
     loginParams.password = credentials.password;
 
+    // Perform the login POST request
     const options = parseUrl(loginUrl);
     const postData = querystring.stringify(loginParams);
     options.method = 'POST';
@@ -130,12 +132,22 @@ class SolidClient {
       'Content-Length': postData.length,
     };
     const loginResponse = await this.fetch(options, postData);
+
+    // Verify the login was successful
+    if (loginResponse.statusCode !== 302) {
+      const message = loginResponse.body.match(/<strong>(.*?)<\/strong>/);
+      const cause = message ? message[1] : 'unknown cause';
+      throw new Error(`Could not log in: ${cause}`);
+    }
+
+    // Redirect to the authentication page, passing the session cookie
     const authUrl = loginResponse.headers.location;
     const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*/, '');
     const authResponse = await this.fetch(Object.assign(parseUrl(authUrl), {
       headers: { cookie },
     }));
 
+    // Obtain the access URL from the redirected response
     const accessUrl = authResponse.headers.location;
     return accessUrl;
   }
