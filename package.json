@@ -1,0 +1,7 @@
+{
+  "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
+  "license": "MIT",
+  "dependencies": {
+    "@trust/oidc-rp": "0.6.0"
+  }
+}
