@@ -21,9 +21,28 @@ class SolidClient {
    * @returns Promise<Session> A session for the given user
    */
   async login(identityProvider, credentials) {
-    // Set up the relying party
+    // Obtain a relying party
     const relyingParty = await this.getRelyingParty(identityProvider);
 
+    // Load or create a session
+    const username = credentials.username;
+    let session = this._identityManager.getSession(relyingParty, username);
+    if (!session) {
+      session = await this.createSession(relyingParty, credentials);
+      this._identityManager.addSession(relyingParty, username, session);
+    }
+    return session;
+  }
+
+  /**
+   * Logs the user in with the given identity provider
+   *
+   * @param relyingParty RelyingParty The relying party
+   * @param credentials object An object with username and password keys
+   *
+   * @returns Promise<Session> A session for the given user
+   */
+  async createSession(relyingParty, credentials) {
     // Obtain the authorization URL
     const authData = {};
     const authUrl = await relyingParty.createRequest({ redirect_uri: redirectUrl }, authData);
