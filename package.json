@@ -1,7 +1,15 @@
 {
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint src bin/*",
+    "test": "npm run lint"
+  },
   "dependencies": {
     "@trust/oidc-rp": "0.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.0.1",
+    "pre-commit": "^1.2.2"
   }
 }
