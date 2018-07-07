@@ -8,6 +8,10 @@ const PoPToken = require('@trust/oidc-rp/lib/PoPToken');
 const redirectUrl = 'http://example.org/';
 
 class SolidClient {
+  constructor({ identityManager }) {
+    this._identityManager = identityManager;
+  }
+
   /**
    * Logs the user in with the given identity provider
    *
@@ -52,8 +56,18 @@ class SolidClient {
    * @returns Promise<RelyingParty> A relying party
    */
   async getRelyingParty(identityProvider) {
-    // TODO: reuse when possible, only register when necessary
-    return this.registerRelyingParty(identityProvider);
+    // Try to load an existing relying party
+    let relyingParty;
+    const providerSettings = this._identityManager.getProviderSettings(identityProvider);
+    if (providerSettings) {
+      relyingParty = RelyingParty.from(providerSettings);
+    }
+    // Create a new relying party
+    else {
+      relyingParty = await this.registerRelyingParty(identityProvider);
+      this._identityManager.addProviderSettings(relyingParty);
+    }
+    return relyingParty;
   }
 
   /**

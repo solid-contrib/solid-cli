@@ -1,5 +1,8 @@
 #!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
 const SolidClient = require('../src/SolidClient');
+const IdentityManager = require('../src/IdentityManager');
 
 // Parse the command-line arguments
 const args = process.argv.slice(2);
@@ -7,15 +10,42 @@ if (args.length !== 4)
   die('Usage: solid-bearer-token identity_provider username password url');
 const [identityProvider, username, password, url] = args;
 
-// Obtain a token
-getToken({ identityProvider, username, password, url }).then(console.log, die);
+
+
+// Initialize the Solid client using the settings file
+const settingsFile = path.join(process.env.HOME, '.solid-cli.json');
+const identityManager = loadIdentityManager(settingsFile);
+const client = new SolidClient({ identityManager });
+
+// Obtain an access token for the given URL
+const token = getToken(client, { identityProvider, username, password, url });
+
+// Save the settings file when done
+token.finally(() => saveIdentityManager(identityManager, settingsFile));
+
+// Log the access token to the console
+token.then(console.log, die);
+
+
+
+// Instantiates the identity manager from the given settings file
+function loadIdentityManager(settingsFile) {
+  let settingsJson;
+  try { settingsJson = fs.readFileSync(settingsFile, 'utf8'); }
+  catch (error) { settingsJson = '{}'; }
+  return IdentityManager.fromJSON(settingsJson);
+}
+
+// Saves the identity manager into a settings file
+function saveIdentityManager(identityManager, settingsFile) {
+  const settingsJSON = identityManager.toJSON();
+  fs.writeFileSync(settingsFile, settingsJSON);
+}
 
 // Obtains a token
-async function getToken({ identityProvider, username, password, url }) {
-  const client = new SolidClient();
+async function getToken(client, { identityProvider, username, password, url }) {
   const session = await client.login(identityProvider, { username, password });
-  const token = await client.createToken(url, session);
-  return token;
+  return client.createToken(url, session);
 }
 
 // Terminates the process with the given error
