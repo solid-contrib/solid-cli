@@ -27,7 +27,7 @@ class SolidClient {
     // Load or create a session
     const username = credentials.username;
     let session = this._identityManager.getSession(relyingParty, username);
-    if (!session) {
+    if (!session || this.isExpired(session)) {
       session = await this.createSession(relyingParty, credentials);
       this._identityManager.addSession(relyingParty, username, session);
     }
@@ -204,6 +204,19 @@ class SolidClient {
       });
       request.on('error', reject);
     });
+  }
+
+  /**
+   * Determines whether the session has expired.
+   *
+   * @param session object The session
+   *
+   * @returns boolean Whether the session has expired
+   */
+  isExpired(session) {
+    const now = Date.now() / 1000;
+    const expiry = session.idClaims && session.idClaims.exp || 0;
+    return expiry < now;
   }
 }
 
