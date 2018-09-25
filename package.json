@@ -1,6 +1,12 @@
 {
+  "name": "@solid/cli",
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
+  "description": "A utility to facilitate command-line interaction with Solid servers",
   "license": "MIT",
+  "repository": "https://github.com/solid/solid-cli",
+  "bin": {
+    "solid-bearer-token": "./bin/solid-bearer-token"
+  },
   "scripts": {
     "lint": "eslint src bin/*",
     "test": "npm run lint"
