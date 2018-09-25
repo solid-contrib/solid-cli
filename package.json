@@ -1,9 +1,14 @@
 {
+  "name": "solid-cli",
+  "version": "1.0.0",
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
   "license": "MIT",
   "scripts": {
     "lint": "eslint src bin/*",
     "test": "npm run lint"
+  },
+  "bin": {
+    "solid-bearer-token": "./bin/solid-bearer-token"
   },
   "dependencies": {
     "@trust/oidc-rp": "0.6.0"
