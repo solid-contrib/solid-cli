@@ -15,3 +15,7 @@ URL=https://drive.verborgh.org/inbox/
 
 curl "$URL" -H 'Authorization: Bearer '`solid-bearer-token "$IDP" "$USERNAME" "$PASSWORD" "$URL"`
 ```
+
+## License
+©2018–present [Ruben Verborgh](https://ruben.verborgh.org/),
+[MIT License](https://github.com/solid/solid-cli/blob/master/LICENSE.md).
