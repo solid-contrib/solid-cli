@@ -1,5 +1,6 @@
 {
   "name": "@solid/cli",
+  "version": "0.1.0",
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
   "description": "A utility to facilitate command-line interaction with Solid servers",
   "license": "MIT",
