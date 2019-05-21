@@ -1,14 +1,6 @@
 # Solid CLI
 A utility to facilitate command-line interaction with Solid servers.
 
-**Note :** While this package is still usable, you may want to use 
-[solid-auth-cli](https://github.com/jeff-zucker/solid-auth-cli)
-instead. It is a thin wrapper around solid-cli that provides additional
-ways to provide login credentials, persistent login, and the same API
-as solid-auth-client.  For command-line and interactive shell access,
-see [solid-shell](https://github.com/jeff-zucker/solid-shell).
-
-
 ## Installation
 ```
 npm install -g @solid/cli
