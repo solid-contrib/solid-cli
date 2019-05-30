@@ -1,4 +1,4 @@
-const { resolve, parse: parseUrl } = require('url');
+const { URL, resolve, parse: parseUrl } = require('url');
 const https = require('https');
 const querystring = require('querystring');
 const RelyingParty = require('@trust/oidc-rp');
@@ -174,8 +174,29 @@ class SolidClient {
     }
 
     // Redirect to the authentication page, passing the session cookie
-    const authUrl = loginResponse.headers.location;
+    let authUrl = loginResponse.headers.location;
     const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*/, '');
+
+    // Handle the new consent page in 5.1.1
+    if (this.isAboveVersion511(loginResponse.headers['x-powered-by'])) {
+      const consUrl = new URL(authUrl);
+      const search = consUrl.search.substring(1);
+      let consPostData = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/\=/g, '":"') + '"}');
+      consPostData.consent = true;
+      consPostData.access_mode = ['Read', 'Write', 'Append', 'Control'];
+      consPostData = querystring.stringify(consPostData);
+      const consOptions = parseUrl(`${consUrl.origin}${consUrl.pathname}`);
+      consOptions.method = 'POST';
+      consOptions.headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': consPostData.length,
+        cookie,
+      };
+      const consentResponse = await this.fetch(consOptions, consPostData);
+
+      authUrl = consentResponse.headers.location;
+    }
+
     const authResponse = await this.fetch(Object.assign(parseUrl(authUrl), {
       headers: { cookie },
     }));
@@ -183,6 +204,21 @@ class SolidClient {
     // Obtain the access URL from the redirected response
     const accessUrl = authResponse.headers.location;
     return accessUrl;
+  }
+
+  isAboveVersion511(version) {
+    const versionNumber = version.split('/')[1];
+    const targetVersion = [5, 1, 1];
+    if (versionNumber) {
+      const versionNumbers = versionNumber.split('.');
+      for (let i = 0; i < targetVersion.length; i++) {
+        if (targetVersion[i] > versionNumbers[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   /**

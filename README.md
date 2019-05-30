@@ -1,6 +1,10 @@
 # Solid CLI
 A utility to facilitate command-line interaction with Solid servers.
 
+## WARNING
+
+This cli is not spec compliant and will only work with node-solid-server.
+
 ## Installation
 ```
 npm install -g @solid/cli
