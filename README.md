@@ -1,6 +1,19 @@
 # Solid CLI
 A utility to facilitate command-line interaction with Solid servers.
 
+⚠️ **Do _not_ depend on this library yet.**
+It currently is a hard-coded integration with node-solid-server,
+meant for experimentation.
+It is not guaranteed to work, and certainly not with arbitrary Solid servers.
+
+We are currently lacking server-side implementations
+of the necessary parts of OIDC for non-browser apps.
+Solid CLI uses a hack to still enable this,
+but it is _not_ a recommended way of working.
+
+In the future, Solid servers and Solid CLI
+should use a standardized protocol instead.
+
 ## Installation
 ```
 npm install -g @solid/cli
