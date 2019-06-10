@@ -179,13 +179,13 @@ class SolidClient {
 
     // Handle the new consent page in 5.1.1
     if (this.isAboveVersion511(loginResponse.headers['x-powered-by'])) {
-      const consUrl = new URL(authUrl);
-      const search = consUrl.search.substring(1);
+      const consentUrl = new URL(authUrl);
+      const search = consentUrl.search.substring(1);
       let consPostData = JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/\=/g, '":"') + '"}');
       consPostData.consent = true;
       consPostData.access_mode = ['Read', 'Write', 'Append', 'Control'];
       consPostData = querystring.stringify(consPostData);
-      const consOptions = parseUrl(`${consUrl.origin}${consUrl.pathname}`);
+      const consOptions = parseUrl(`${consentUrl.origin}${consentUrl.pathname}`);
       consOptions.method = 'POST';
       consOptions.headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -207,18 +207,7 @@ class SolidClient {
   }
 
   isAboveVersion511(version) {
-    const versionNumber = version.split('/')[1];
-    const targetVersion = [5, 1, 1];
-    if (versionNumber) {
-      const versionNumbers = versionNumber.split('.');
-      for (let i = 0; i < targetVersion.length; i++) {
-        if (targetVersion[i] > versionNumbers[i]) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
+    return /^solid-server\/5\.(1\.[1-9]|[2-9]|1\d)/.test(version);
   }
 
   /**
