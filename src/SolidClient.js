@@ -181,7 +181,7 @@ class SolidClient {
     if (this.isAboveVersion511(loginResponse.headers['x-powered-by'])) {
       const consUrl = new URL(authUrl);
       const search = consUrl.search.substring(1);
-      let consPostData = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/\=/g, '":"') + '"}');
+      let consPostData = JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/\=/g, '":"') + '"}');
       consPostData.consent = true;
       consPostData.access_mode = ['Read', 'Write', 'Append', 'Control'];
       consPostData = querystring.stringify(consPostData);
