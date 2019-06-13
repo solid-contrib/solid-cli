@@ -1,8 +1,8 @@
 const { URL, resolve, parse: parseUrl } = require('url');
 const https = require('https');
 const querystring = require('querystring');
-const RelyingParty = require('@trust/oidc-rp');
-const PoPToken = require('@trust/oidc-rp/lib/PoPToken');
+const RelyingParty = require('@solid/oidc-rp');
+const PoPToken = require('@solid/oidc-rp/lib/PoPToken');
 
 // Fake redirect URL
 const redirectUrl = 'http://example.org/';
