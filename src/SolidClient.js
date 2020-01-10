@@ -181,8 +181,16 @@ class SolidClient {
     if (this.isAboveVersion511(loginResponse.headers['x-powered-by'])) {
       const consentUrl = new URL(authUrl);
       const search = consentUrl.search.substring(1);
+      if (!search) {
+        throw new Error(`Login response doesn't contain a search string: ${authUrl}`);
+      }
       const searchJson = decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/\=/g, '":"');
-      let consPostData = searchJson ? JSON.parse(`{"${searchJson}"}`) : {};
+      let consPostData = {};
+      try {
+        consPostData = JSON.parse(`{"${searchJson}"}`);
+      } catch (error) {
+        throw new Error(`Login response doesn't contain a search string: ${authUrl} , cause JSON parsing error ${error}`);
+      }
       consPostData.consent = true;
       consPostData.access_mode = ['Read', 'Write', 'Append', 'Control'];
       consPostData = querystring.stringify(consPostData);
