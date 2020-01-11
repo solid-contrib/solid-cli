@@ -193,7 +193,7 @@ class SolidClient {
       }
       catch (error) {
         throw new Error(
-          `Login response doesn't contain a search string: ${authUrl} , cause JSON parsing error ${error}`
+          `Login response doesn't contain a search string: ${authUrl}, causing a JSON parsing error: ${error}`
         );
       }
       consPostData.consent = true;
