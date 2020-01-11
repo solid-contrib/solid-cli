@@ -136,7 +136,8 @@ class SolidClient {
     // Extract the password form's hidden fields
     const loginParams = { loginUrl };
     let match, inputRegex = /<input.*?name="([^"]+)".*?value="([^"]+)"/g;
-    while ((match = inputRegex.exec(passwordForm))) loginParams[match[1]] = match[2];
+    while ((match = inputRegex.exec(passwordForm)))
+      loginParams[match[1]] = match[2];
 
     return loginParams;
   }
