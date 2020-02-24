@@ -13,7 +13,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@solid/oidc-rp": "^0.9.0"
+    "@solid/oidc-rp": "^0.10.0"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
