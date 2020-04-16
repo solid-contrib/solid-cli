@@ -45,7 +45,7 @@ class SolidClient {
   async createSession(relyingParty, credentials) {
     // Obtain the authorization URL
     const authData = {};
-    const authUrl = await relyingParty.createRequest({ redirect_uri: redirectUrl }, authData);
+    const authUrl = await relyingParty.createRequest({ redirect_uri: redirectUrl, scope: ['openid'] }, authData);
 
     // Perform the login
     const loginParams = await this.getLoginParams(authUrl);
