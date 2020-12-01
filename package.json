@@ -9,14 +9,15 @@
     "solid-bearer-token": "./bin/solid-bearer-token"
   },
   "scripts": {
+    "build": "echo Nothing to build",
     "lint": "eslint src bin/*",
     "test": "npm run lint"
   },
   "dependencies": {
-    "@solid/oidc-rp": "^0.10.0"
+    "@solid/oidc-rp": "^0.11.4"
   },
   "devDependencies": {
-    "eslint": "^7.5.0",
+    "eslint": "^7.14.0",
     "pre-commit": "^1.2.2"
   }
 }
