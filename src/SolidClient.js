@@ -136,7 +136,7 @@ class SolidClient {
     // Extract the password form's hidden fields
     const loginParams = { loginUrl };
     let match, inputRegex = /<input.*?name="([^"]+)".*?value="([^"]+)"/g;
-    while (match = inputRegex.exec(passwordForm))
+    while ((match = inputRegex.exec(passwordForm)))
       loginParams[match[1]] = match[2];
 
     return loginParams;
@@ -181,7 +181,22 @@ class SolidClient {
     if (this.isAboveVersion511(loginResponse.headers['x-powered-by'])) {
       const consentUrl = new URL(authUrl);
       const search = consentUrl.search.substring(1);
-      let consPostData = JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/\=/g, '":"') + '"}');
+      if (!search) {
+        throw new Error(`Login response doesn't contain a search string: ${authUrl}`);
+      }
+      let consPostData = {};
+      try {
+        const searchJson = decodeURIComponent(search)
+          .replace(/"/g, '\\"')
+          .replace(/&/g, '","')
+          .replace(/\=/g, '":"');
+        consPostData = JSON.parse(`{"${searchJson}"}`);
+      }
+      catch (error) {
+        throw new Error(
+          `Login response doesn't contain a search string: ${authUrl}, causing a JSON parsing error: ${error}`
+        );
+      }
       consPostData.consent = true;
       consPostData.access_mode = ['Read', 'Write', 'Append', 'Control'];
       consPostData = querystring.stringify(consPostData);
@@ -197,9 +212,11 @@ class SolidClient {
       authUrl = consentResponse.headers.location;
     }
 
-    const authResponse = await this.fetch(Object.assign(parseUrl(authUrl), {
-      headers: { cookie },
-    }));
+    const authResponse = await this.fetch(
+      Object.assign(parseUrl(authUrl), {
+        headers: { cookie },
+      })
+    );
 
     // Obtain the access URL from the redirected response
     const accessUrl = authResponse.headers.location;
@@ -224,7 +241,7 @@ class SolidClient {
       request.end(data);
       request.on('response', response => {
         response.body = '';
-        response.on('data', data => response.body += data);
+        response.on('data', data => (response.body += data));
         response.on('end', () => resolve(response));
       });
       request.on('error', reject);
@@ -240,7 +257,7 @@ class SolidClient {
    */
   isExpired(session) {
     const now = Date.now() / 1000;
-    const expiry = session.idClaims && session.idClaims.exp || 0;
+    const expiry = (session.idClaims && session.idClaims.exp) || 0;
     return expiry < now;
   }
 }
